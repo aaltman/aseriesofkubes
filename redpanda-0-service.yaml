@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: /snap/kompose/19/kompose-linux-amd64 convert
+    kompose.version: 1.21.0 (992df58d8)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: redpanda-0
+  name: redpanda-0
+spec:
+  ports:
+  - name: "18081"
+    port: 18081
+    targetPort: 18081
+  - name: "18082"
+    port: 18082
+    targetPort: 18082
+  - name: "19092"
+    port: 19092
+    targetPort: 19092
+  - name: "19644"
+    port: 19644
+    targetPort: 9644
+  selector:
+    io.kompose.service: redpanda-0
+status:
+  loadBalancer: {}

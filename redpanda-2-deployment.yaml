@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: /snap/kompose/19/kompose-linux-amd64 convert
+    kompose.version: 1.21.0 (992df58d8)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: redpanda-2
+  name: redpanda-2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: redpanda-2
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: /snap/kompose/19/kompose-linux-amd64 convert
+        kompose.version: 1.21.0 (992df58d8)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/redpanda_network: "true"
+        io.kompose.service: redpanda-2
+    spec:
+      containers:
+      - args:
+        - redpanda
+        - start
+        - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:39092
+        - --advertise-kafka-addr internal://redpanda-2:9092,external://localhost:39092
+        - --pandaproxy-addr internal://0.0.0.0:8082,external://0.0.0.0:38082
+        - --advertise-pandaproxy-addr internal://redpanda-2:8082,external://localhost:38082
+        - --schema-registry-addr internal://0.0.0.0:8081,external://0.0.0.0:38081
+        - --rpc-addr redpanda-2:33145
+        - --advertise-rpc-addr redpanda-2:33145
+        - --smp 1
+        - --memory 1G
+        - --mode dev-container
+        - --default-log-level=debug
+        - --seeds redpanda-0:33145
+        image: docker.redpanda.com/redpandadata/redpanda:v23.3.6
+        imagePullPolicy: ""
+        name: redpanda-2
+        ports:
+        - containerPort: 38081
+        - containerPort: 38082
+        - containerPort: 39092
+        - containerPort: 9644
+        resources: {}
+        volumeMounts:
+        - mountPath: /var/lib/redpanda/data
+          name: redpanda-2
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes:
+      - name: redpanda-2
+        persistentVolumeClaim:
+          claimName: redpanda-2
+status: {}
